@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:w24_app_dev_assignment_2/part_1.dart';
-import 'package:w24_app_dev_assignment_2/part_2.dart';
-import 'package:w24_app_dev_assignment_2/part_3.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:provider/provider.dart';
+import 'package:w24_app_dev_assignment_2/part_1.dart' as part_1;
+import 'package:w24_app_dev_assignment_2/part_2.dart' as part_2;
+import 'package:w24_app_dev_assignment_2/part_3.dart' as part_3;
 
 void main() {
   runApp(const MyApp());
@@ -30,21 +32,21 @@ class HomePage extends StatelessWidget {
             OutlinedButton(
                 onPressed: () {
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => Part1Main()),
+                    MaterialPageRoute(builder: (context) => part_1.Main()),
                   );
                 },
                 child: Text('Part 1')),
             OutlinedButton(
                 onPressed: () {
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => Part2Main()),
+                    MaterialPageRoute(builder: (context) => part_2.Main()),
                   );
                 },
                 child: Text('Part 2')),
             OutlinedButton(
                 onPressed: () {
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => Part3Main()),
+                    MaterialPageRoute(builder: (context) => part_3.Main()),
                   );
                 },
                 child: Text('Part 3'))
