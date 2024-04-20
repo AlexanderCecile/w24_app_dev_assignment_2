@@ -2,7 +2,6 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DBHelper {
-  //static final DBHelper instance = DBHelper._privateConstructor();
   static const _databaseName = "names_db.db";
   static const _databaseVersion = 1;
 
@@ -36,11 +35,20 @@ class DBHelper {
 
   // SQL code to create the database table
   void _onCreate(Database db, int version) async {
-    await db.execute('''CREATE TABLE $table ('
-            '$colId INTEGER PRIMARY KEY AUTOINCREMENT,'
-            '$colFirstName TEXT NOT NULL,'
-            '$colLastName TEXT NOT NULL'
-            ')
-        ''');
+    await db.execute(
+        'CREATE TABLE $table ($colId INTEGER PRIMARY KEY AUTOINCREMENT,'
+        '$colFirstName TEXT NOT NULL,$colLastName TEXT NOT NULL)');
+    //await db.insert(table, {DBHelper.colFirstName: 'Test first name', DBHelper.colLastName: 'Test last name'});
+  }
+
+  Future<int?> insertNames(String firstName, String lastName) async {
+    Database? db = await instance.database;
+    return await db?.insert(table,
+        {DBHelper.colFirstName: firstName, DBHelper.colLastName: lastName});
+  }
+
+  Future<List<Map<String, Object?>>?> getNames() async {
+    Database? db = await instance.database;
+    return db?.query(table);
   }
 }

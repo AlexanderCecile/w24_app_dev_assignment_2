@@ -1,59 +1,84 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:w24_app_dev_assignment_2/db_helper.dart';
 
-class Main extends StatelessWidget {
+class Main extends StatefulWidget {
   const Main({super.key});
+
+  @override
+  State<Main> createState() => _MainState();
+}
+
+class _MainState extends State<Main> {
+  final dbHelper = DBHelper.instance;
+
+  final TextEditingController _controller1 = TextEditingController();
+  final TextEditingController _controller2 = TextEditingController();
+
+  late Future<List<Map<String, Object?>>?> nameObjs;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    nameObjs = dbHelper.getNames();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Part 1'),
+          title: const Text('Part 1'),
         ),
-        body: NamesPage());
-  }
-}
-
-class NamesPage extends StatefulWidget {
-  const NamesPage({super.key});
-
-  @override
-  State<NamesPage> createState() => _NamesPageState();
-}
-
-class _NamesPageState extends State<NamesPage> {
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
-
-  @override
-  void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TextField(
-          controller: _firstNameController,
-        ),
-        TextField(
-          controller: _lastNameController,
-        ),
-        OutlinedButton(
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                    'first name: ${_firstNameController.text}, last name: ${_lastNameController.text}'),
-              ),
-            );
-          },
-          child: Text('Submit'),
-        ),
-      ],
-    );
+        body: Column(
+          children: [
+            TextField(
+              controller: _controller1,
+              decoration: const InputDecoration(labelText: 'First name'),
+            ),
+            TextField(
+              controller: _controller2,
+              decoration: const InputDecoration(labelText: 'Last name'),
+            ),
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              OutlinedButton(
+                  onPressed: () {
+                    dbHelper.insertNames(_controller1.text, _controller2.text);
+                    setState(() {
+                      nameObjs = dbHelper.getNames();
+                    });
+                  },
+                  child: const Text('Submit')),
+              OutlinedButton(onPressed: () {}, child: const Text('Edit'))
+            ]),
+            Expanded(
+              child: FutureBuilder(
+                  future: nameObjs,
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<Map<String, Object?>>?> snapshot) {
+                    List<Widget> listElems = [];
+                    if (snapshot.hasData && snapshot.data != null) {
+                      for (final elem in snapshot.data!) {
+                        listElems.add(
+                          Row(
+                            children: [
+                              Expanded(child: Text(elem.toString())),
+                              IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(Icons.edit)),
+                              IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(Icons.delete))
+                            ],
+                          ),
+                        );
+                      }
+                    }
+                    return ListView(children: listElems);
+                  }),
+            ),
+          ],
+        ));
   }
 }
